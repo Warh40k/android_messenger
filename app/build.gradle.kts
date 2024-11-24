@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.converter.scalars)
     implementation(libs.androidx.runtime.livedata)  // Latest stable version
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.navigation.compose)
     ksp(libs.androidx.room.compiler)  // For Kotlin Annotation Processing (kapt)
     // For Kotlin Extensions (optional but recommended)
     implementation(libs.androidx.room.ktx)

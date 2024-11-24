@@ -1,5 +1,6 @@
 package study.nikita.chat.data.api
 
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -12,7 +13,7 @@ import study.nikita.chat.data.model.User
 
 interface ApiService {
     @POST("/login")
-    suspend fun login(@Body loginRequest : LoginRequest) : String
+    suspend fun login(@Body loginRequest : String) : String
 
     @POST("/addusr")
     suspend fun register(@Body userData: String) : String
@@ -39,7 +40,7 @@ interface ApiService {
     suspend fun getMessages(@Path("channel") chatId: String): List<Message>
 
     companion object {
-        private const val BASE_URL = "https://faerytea.name:8008"
+        const val BASE_URL = "https://faerytea.name:8008"
 
         fun create(): ApiService {
             val retrofit: Retrofit = Retrofit.Builder()

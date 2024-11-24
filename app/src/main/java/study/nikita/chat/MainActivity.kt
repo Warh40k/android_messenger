@@ -1,57 +1,48 @@
 package study.nikita.chat
 
+import AuthManager
 import AuthScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import study.nikita.chat.data.viewmodel.AuthViewModel
-import study.nikita.chat.ui.theme.ChadTheme
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ChadTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AuthScreen(
-                        modifier = Modifier.padding(innerPadding),
-                    )
-                }
-            }
+            MyApp()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MyApp() {
+    val navController = rememberNavController()
+    val authManager = AuthManager(context = LocalContext.current)
+    val authToken = remember {authManager.getAuthToken()}
+    NavHost(navController = navController, startDestination = if (authToken.isNullOrEmpty()) "auth" else "main") {
+        composable("auth") { AuthScreen(authManager) }
+        composable("main") { ChatList(navController) }
+    }
+    if (authToken.isNullOrEmpty()) {
+        // Navigate to Authorization screen if no token
+        navController.navigate("auth")
+    } else {
+        // Main screen after successful authentication
+        ChatList(navController)
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    ChadTheme {
-        Greeting("Android")
-    }
+fun ChatList(navController: NavController) {
+    Text("Not implemented")
 }

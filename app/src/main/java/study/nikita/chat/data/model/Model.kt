@@ -2,6 +2,7 @@ package study.nikita.chat.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "channels")
 data class Channel(
@@ -34,6 +35,6 @@ data class Image(
     val data: String
 )
 data class LoginRequest(
-    val name: String,
-    val password: String
+    @SerializedName("name") val name: String,
+    @SerializedName("pwd") val password: String
 )
