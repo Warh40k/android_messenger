@@ -33,4 +33,7 @@ data class Image(
     @PrimaryKey val id: String,
     val data: String
 )
-data class LoginRequest(val name: String, val password: String)
+data class LoginRequest(
+    val name: String,
+    val password: String
+)

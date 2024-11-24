@@ -1,9 +1,11 @@
 package study.nikita.chat
 
+import AuthScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,20 +21,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.viewmodel.compose.viewModel
+import study.nikita.chat.data.viewmodel.AuthViewModel
 import study.nikita.chat.ui.theme.ChadTheme
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             ChadTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    AuthScreen(
+                        modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
@@ -53,21 +53,5 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     ChadTheme {
         Greeting("Android")
-    }
-}
-
-@Composable
-fun AuthScreen(onAuthSuccess: () -> Unit) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-    Column {
-        TextField(value = username, onValueChange = { username = it }, label = { Text("Username") })
-        TextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation())
-        Button(onClick = {
-            onAuthSuccess()
-        }) {
-            Text("Login")
-        }
     }
 }

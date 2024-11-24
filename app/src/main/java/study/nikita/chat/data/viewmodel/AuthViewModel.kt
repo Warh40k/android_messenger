@@ -1,30 +1,28 @@
 package study.nikita.chat.data.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import study.nikita.chat.data.api.ApiService
 import study.nikita.chat.data.model.LoginRequest
-import javax.inject.Inject
 
-@HiltViewModel
-class AuthViewModel @Inject constructor(
-    private val name : String,
-    private val password : String) : ViewModel() {
-
+class AuthViewModel : ViewModel() {
     private val apiService = ApiService.create()
 
-    private lateinit var token : String
+    private var _token = MutableLiveData<String?>()
+    val token: LiveData<String?> get() = _token
 
-    private fun token() {
+    fun getAuthToken(name : String, password : String) {
         viewModelScope.launch {
             try {
-                token = apiService.login(LoginRequest(name, password))
-
-            } catch (e: Exception) {
-
+                _token.value = apiService.login(LoginRequest(name, password))
+                println(token)
+            } catch (e : Exception) {
+                println(e.message)
             }
+
         }
     }
 }
