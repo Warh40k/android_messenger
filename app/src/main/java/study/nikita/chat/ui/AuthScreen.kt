@@ -9,9 +9,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import study.nikita.chat.data.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
-fun AuthScreen(authManager: AuthManager, authViewModel: AuthViewModel = viewModel()) {
+fun AuthScreen(authManager: AuthManager, navController: NavController, authViewModel: AuthViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -62,13 +63,12 @@ fun AuthScreen(authManager: AuthManager, authViewModel: AuthViewModel = viewMode
             } else {
                 Text(text = "Login")
             }
+
+            if (!authManager.getAuthToken().isNullOrEmpty()) {
+                navController.navigate("main")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Display AuthToken if login is successful
-        authToken.value?.let {
-            Text(text = "Logged in with token: $it", modifier = Modifier.padding(8.dp))
-        }
     }
 }

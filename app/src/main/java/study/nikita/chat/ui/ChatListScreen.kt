@@ -1,18 +1,28 @@
 package study.nikita.chat.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import android.content.res.Configuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import study.nikita.chat.data.model.Channel
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import study.nikita.chat.data.viewmodel.ChannelViewModel
 
 @Composable
-fun ChatListScreen(chats: List<Channel>, onSelectChat: (String) -> Unit) {
-    LazyColumn {
-        items(chats) { chat ->
-            Text(chat.name, Modifier.clickable { onSelectChat(chat.id) })
-        }
+fun ChatScreen(navController : NavController, channelViewModel: ChannelViewModel = viewModel()) {
+    when (LocalConfiguration.current.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> ChatPortrait(navController)
+        Configuration.ORIENTATION_LANDSCAPE -> ChatAlbum(navController)
+        else -> throw Exception("some kind of shit")
     }
+}
+
+@Composable
+fun ChatPortrait(navController: NavController) {
+    Text("Portrait shit")
+}
+
+@Composable
+fun ChatAlbum(navController: NavController) {
+    Text("Album shit")
 }

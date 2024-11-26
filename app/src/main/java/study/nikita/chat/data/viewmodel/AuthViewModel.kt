@@ -6,10 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import study.nikita.chat.data.api.ApiService
 import study.nikita.chat.data.api.ApiService.Companion.BASE_URL
