@@ -1,14 +1,11 @@
 package study.nikita.chat.data.api
 
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import study.nikita.chat.data.model.Channel
 import study.nikita.chat.data.model.Message
 import retrofit2.http.*
 import study.nikita.chat.data.model.Image
-import study.nikita.chat.data.model.LoginRequest
 import study.nikita.chat.data.model.User
 
 interface ApiService {
@@ -25,7 +22,7 @@ interface ApiService {
     suspend fun logout(@Header("X-Auth-Token") token: String)
 
     @GET("/channels")
-    suspend fun getChannels(): List<Channel>
+    suspend fun getChannels(): List<String>
 
     @GET("/users")
     suspend fun getUsers(): List<User>

@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "channels")
-data class Channel(
+@Entity(tableName = "chats")
+data class Chat(
     val id: String,
     val name: String
 )

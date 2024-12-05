@@ -6,7 +6,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import study.nikita.chat.data.api.ApiService
 import study.nikita.chat.data.api.ApiService.Companion.BASE_URL
 
-class ChannelViewModel : ViewModel() {
+class ChatViewModel : ViewModel() {
     private var apiService : ApiService;
 
     init {
@@ -16,6 +16,4 @@ class ChannelViewModel : ViewModel() {
             .build()
         apiService = retrofit.create(ApiService::class.java)
     }
-
-
 }
