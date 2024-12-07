@@ -20,6 +20,10 @@ class MessageListViewModel @Inject constructor(private val repository: ChatRepos
     val selected: StateFlow<String> = repository.selectedChat
     var isLoading = false
 
+    fun cleanMessageList() {
+        _messages.value = emptyList()
+    }
+
     fun getMessageList(channel : String?, lastId : Int = 0) {
         if (isLoading) {
             return

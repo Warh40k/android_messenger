@@ -107,6 +107,11 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
         }
     }
 
+    LaunchedEffect(selected) {
+        messageListViewModel.cleanMessageList()
+        messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
+    }
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = listState
@@ -125,6 +130,7 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
 
 @Composable
 fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
+    val orientation = LocalConfiguration.current.orientation
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,7 +144,9 @@ fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatLi
             Text(text = chat.name, style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.clickable {
                     chatListViewModel.selectChat(chat.name)
-                    navController.navigate("messages")
+                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        navController.navigate("messages")
+                    }
                 }
             )
             Text(text = "Id: ${chat.id}", style = MaterialTheme.typography.bodyMedium)

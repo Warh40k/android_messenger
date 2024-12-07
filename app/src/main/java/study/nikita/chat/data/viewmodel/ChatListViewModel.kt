@@ -19,8 +19,6 @@ class ChatListViewModel @Inject constructor(private val repository: ChatReposito
     private var _chatList = MutableStateFlow<List<Chat>>(emptyList())
     val chatList: StateFlow<List<Chat>> get() = _chatList.asStateFlow()
 
-    val current: StateFlow<String> get() = repository.selectedChat
-
     fun selectChat(chatID : String) {
         repository.updateData(chatID)
     }
@@ -37,7 +35,7 @@ class ChatListViewModel @Inject constructor(private val repository: ChatReposito
                         k++
                         continue
                     }
-                    var name = comps.component1()
+                    val name = comps.component1()
                     chanList.add(Chat((k++).toString(), name))
                 }
                 _chatList.value = chanList
