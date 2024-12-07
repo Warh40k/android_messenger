@@ -18,7 +18,7 @@ data class Message(
     val timestamp: String
 )
 data class MessageData(
-    val text: Text,
+    val Text: Text,
     val image: Image
 )
 data class Text(

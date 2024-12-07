@@ -19,12 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import study.nikita.chat.data.model.Chat
 import study.nikita.chat.data.model.Message
@@ -89,8 +89,10 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
 
-    if (selected != "") {
-        messageListViewModel.getMessageList(selected)
+    remember {
+        if (selected != "") {
+            messageListViewModel.getMessageList(selected)
+        }
     }
 
     LazyColumn(
@@ -137,15 +139,8 @@ fun MessageItem(message: Message) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Box (
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = message.from, style = MaterialTheme.typography.titleLarge)
-                Text(text = message.data.text.text, style = MaterialTheme.typography.bodyMedium)
-            }
+            Text(text = message.from, style = MaterialTheme.typography.titleSmall)
+            Text(text = message.data.Text.text, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

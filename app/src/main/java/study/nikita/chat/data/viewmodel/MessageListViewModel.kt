@@ -23,7 +23,8 @@ class MessageListViewModel @Inject constructor(private val repository: ChatRepos
     fun getMessageList(channel : String?) {
         viewModelScope.launch {
             try {
-                _messages.value = apiService.getMessages(channel)
+                val messagesList = apiService.getMessages(channel)
+                _messages.value = messagesList
             } catch (e : Exception) {
                 println(e.message)
             }
