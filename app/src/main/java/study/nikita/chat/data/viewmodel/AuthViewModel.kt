@@ -8,24 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import study.nikita.chat.data.api.ApiService
-import study.nikita.chat.data.api.ApiService.Companion.BASE_URL
+import study.nikita.chat.data.api.rest.ApiService
 import study.nikita.chat.data.model.LoginRequest
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private var authRepository: AuthRepository) : ViewModel() {
-    private var apiService : ApiService;
-
-    init {
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-        apiService = retrofit.create(ApiService::class.java)
-    }
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val apiService: ApiService,
+) : ViewModel() {
 
     private var _token = MutableLiveData<String?>()
     val token: LiveData<String?> get() = _token
@@ -35,8 +26,8 @@ class AuthViewModel @Inject constructor(private var authRepository: AuthReposito
             try {
                 val gson = Gson()
                 _token.value = apiService.login(gson.toJson(LoginRequest(name, password)))
-                authRepository.saveAuthToken(token.toString())
-                println(token)
+                authRepository.saveAuthToken(_token.value.toString())
+                println(_token.value)
             } catch (e : Exception) {
                 println(e.message)
             }

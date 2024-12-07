@@ -1,16 +1,18 @@
-package study.nikita.chat.data.api
+package study.nikita.chat.data.api.websocket
 
 import okhttp3.*
 import okio.ByteString
 
-class ChatWebSocket(private val serverURL : String) {
+class ChatWebSocket {
     private val client = OkHttpClient()
-    private lateinit var webSocket: WebSocket
+    private var webSocket: WebSocket? = null
 
     fun connect(
+        serverURL : String,
         onOpen: () -> Unit,
         onMessage: (String) -> Unit,
-        onError: (String) -> Unit
+        onError: (String) -> Unit,
+        onClosing: () -> Unit
     ) {
         val request = Request.Builder()
             .url(serverURL)
@@ -32,14 +34,18 @@ class ChatWebSocket(private val serverURL : String) {
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 onError(t.message ?: "Unknown error")
             }
+
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                onClosing()
+            }
         })
     }
 
     fun sendMessage(message: String) {
-        webSocket.send(message)
+        val result = webSocket?.send(message)
     }
 
     fun disconnect() {
-        webSocket.close(1000, "Client closed the connection")
+        webSocket?.close(1000, "Client closed the connection")
     }
 }

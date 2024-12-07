@@ -19,7 +19,7 @@ data class Message(
 )
 data class MessageData(
     val Text: Text,
-    val image: Image
+    val image: Image?
 )
 data class Text(
     val text: String

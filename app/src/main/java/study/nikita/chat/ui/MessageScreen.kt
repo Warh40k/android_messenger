@@ -60,6 +60,7 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
 
     LaunchedEffect(selected) {
         messageListViewModel.cleanMessageList()
+        messageListViewModel.onChannelSelected()
         messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
     }
 
@@ -111,6 +112,8 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
                         )
                         Button(
                             onClick = {
+                                messageListViewModel.sendMessage()
+                                messageListViewModel.cleanUserInput()
                             },
                             modifier = Modifier.padding(start = 8.dp)
                         ) {

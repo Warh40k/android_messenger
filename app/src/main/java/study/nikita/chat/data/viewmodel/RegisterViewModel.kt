@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import study.nikita.chat.data.api.ApiService
+import study.nikita.chat.data.api.rest.ApiService
 
 class RegisterViewModel(
     private val name : String,

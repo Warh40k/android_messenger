@@ -3,8 +3,8 @@ package study.nikita.chat.data.viewmodel
 import androidx.lifecycle.ViewModel
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import study.nikita.chat.data.api.ApiService
-import study.nikita.chat.data.api.ApiService.Companion.BASE_URL
+import study.nikita.chat.data.api.rest.ApiService
+import study.nikita.chat.data.api.rest.ApiService.Companion.BASE_URL
 
 class ChatViewModel : ViewModel() {
     private var apiService : ApiService;

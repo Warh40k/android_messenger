@@ -6,13 +6,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import study.nikita.chat.data.viewmodel.AuthViewModel
 import androidx.navigation.NavController
 import study.nikita.chat.data.repository.AuthRepository
 
 @Composable
-fun AuthScreen(authRepository: AuthRepository, navController: NavController, authViewModel: AuthViewModel = viewModel()) {
+fun AuthScreen(authRepository: AuthRepository, navController: NavController, authViewModel: AuthViewModel = hiltViewModel()) {
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import study.nikita.chat.data.api.ApiService
+import study.nikita.chat.data.api.rest.ApiService
 import study.nikita.chat.data.model.Chat
 import study.nikita.chat.data.repository.ChatRepository
 import java.util.LinkedList

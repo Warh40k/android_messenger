@@ -2,14 +2,12 @@ package study.nikita.chat.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import javax.inject.Inject
 
-class AuthRepository(context: Context) {
+class AuthRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
 
@@ -23,15 +21,5 @@ class AuthRepository(context: Context) {
 
     fun clearAuthToken() {
         sharedPreferences.edit().remove("auth_token").apply()
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object AuthRepositoryModule {
-    @Provides
-    @Singleton
-    fun provideRepository(@ApplicationContext context: Context): AuthRepository {
-        return AuthRepository(context)
     }
 }
