@@ -1,6 +1,7 @@
 package study.nikita.chat.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,13 +62,16 @@ fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel 
             chatListViewModel.getChatList()
         }
     }
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(chanList) { channel ->
-            ChatItem(channel, navController)
+    Column {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(chanList) { channel ->
+                ChatItem(channel, navController)
+            }
         }
     }
+
 }
 
 @Composable
@@ -91,6 +99,7 @@ fun ChatAlbum(navController: NavController) {
 fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
+    val messageField by messageListViewModel.messageInput.collectAsState()
     val isLoading = messageListViewModel.isLoading
 
     val listState = rememberLazyListState()
@@ -112,17 +121,52 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
         messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
     }
 
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        state = listState
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(messages) { message ->
-            MessageItem(message)
-        }
+        Column (
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(16.dp)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = listState
+            ) {
+                items(messages) { message ->
+                    MessageItem(message)
+                }
 
-        if (isLoading) {
-            item {
-                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+                if (isLoading) {
+                    item {
+                        CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+                    }
+                }
+            }
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TextField(
+                    value = messageField,
+                    onValueChange = { messageListViewModel.onTextChanged(it) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(1.dp, Color.Gray),
+                    singleLine = true,
+                )
+                Button(
+                    onClick = {
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                    } else {
+                        Text(text = "Send")
+                    }
+                }
             }
         }
     }

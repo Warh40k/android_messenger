@@ -20,6 +20,17 @@ class MessageListViewModel @Inject constructor(private val repository: ChatRepos
     val selected: StateFlow<String> = repository.selectedChat
     var isLoading = false
 
+    private var _messageInput = MutableStateFlow("")
+    var messageInput: StateFlow<String>
+        get() = _messageInput.asStateFlow()
+        set(value) {
+            _messageInput.value = value.value
+        }
+
+    fun onTextChanged(text : String) {
+        _messageInput.value = text
+    }
+
     fun cleanMessageList() {
         _messages.value = emptyList()
     }
@@ -38,10 +49,6 @@ class MessageListViewModel @Inject constructor(private val repository: ChatRepos
             }
         }
         isLoading = false
-    }
-
-    fun selectChat(chatID : String) {
-        repository.updateData(chatID)
     }
 }
 
