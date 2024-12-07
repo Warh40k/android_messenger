@@ -20,7 +20,7 @@ class ChatListViewModel @Inject constructor(private val repository: ChatReposito
     val chatList: StateFlow<List<Chat>> get() = _chatList.asStateFlow()
 
     fun selectChat(chatID : String) {
-        repository.updateData(chatID)
+        repository.setSelectedChat(chatID)
     }
 
     fun getChatList() {

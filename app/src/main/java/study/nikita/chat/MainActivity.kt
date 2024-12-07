@@ -1,6 +1,6 @@
 package study.nikita.chat
 
-import AuthManager
+import study.nikita.chat.data.repository.AuthRepository
 import AuthScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -29,11 +29,11 @@ class MainActivity : ComponentActivity() {
             ChadTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        val authManager = AuthManager(context = LocalContext.current)
-                        val authToken = remember {authManager.getAuthToken()}
+                        val authRepository = AuthRepository(context = LocalContext.current)
+                        val authToken = remember {authRepository.getAuthToken()}
                         val navController = rememberNavController()
                         NavHost(navController = navController, startDestination = if (authToken.isNullOrEmpty()) "auth" else "main") {
-                            composable("auth") { AuthScreen(authManager, navController) }
+                            composable("auth") { AuthScreen(authRepository, navController) }
                             composable("main") { ChatScreen(navController) }
                             composable("messages") { MessageList() }
                         }

@@ -2,7 +2,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -10,16 +9,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import study.nikita.chat.data.viewmodel.AuthViewModel
 import androidx.navigation.NavController
+import study.nikita.chat.data.repository.AuthRepository
 
 @Composable
-fun AuthScreen(authManager: AuthManager, navController: NavController, authViewModel: AuthViewModel = viewModel()) {
+fun AuthScreen(authRepository: AuthRepository, navController: NavController, authViewModel: AuthViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-
-    // Observe authToken and errorMessage from ViewModel
-    val authToken = authViewModel.token.observeAsState()
-//    val errorMessage = authViewModel.errorMessage.observeAsState()
 
     Column(
         modifier = Modifier
@@ -53,7 +49,7 @@ fun AuthScreen(authManager: AuthManager, navController: NavController, authViewM
         Button(
             onClick = {
                 isLoading = true
-                authViewModel.getAuthToken(name, password, authManager)
+                authViewModel.getAuthToken(name, password)
                 isLoading = false
             },
             modifier = Modifier.fillMaxWidth()
@@ -64,7 +60,7 @@ fun AuthScreen(authManager: AuthManager, navController: NavController, authViewM
                 Text(text = "Login")
             }
 
-            if (!authManager.getAuthToken().isNullOrEmpty()) {
+            if (!authRepository.getAuthToken().isNullOrEmpty()) {
                 navController.navigate("main")
             }
         }

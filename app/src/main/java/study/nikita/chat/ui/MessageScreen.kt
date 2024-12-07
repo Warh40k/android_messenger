@@ -42,7 +42,7 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
     val messageField by messageListViewModel.messageInput.collectAsState()
-    val isLoading = messageListViewModel.isLoading
+    val isLoading by messageListViewModel.isLoading.collectAsState()
 
     val listState = rememberLazyListState()
 

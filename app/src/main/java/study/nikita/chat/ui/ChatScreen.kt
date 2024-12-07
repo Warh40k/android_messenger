@@ -75,7 +75,6 @@ fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel 
             }
         }
     }
-
 }
 
 @Composable
