@@ -1,6 +1,7 @@
 package study.nikita.chat.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +19,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -95,6 +99,7 @@ fun ChatAlbum(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
@@ -121,55 +126,64 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
         messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column (
-            modifier = Modifier.align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                state = listState
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(selected) },
+            )
+        },
+        content = { paddingValues ->
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                items(messages) { message ->
-                    MessageItem(message)
-                }
-
-                if (isLoading) {
-                    item {
-                        CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
-                    }
-                }
-            }
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                TextField(
-                    value = messageField,
-                    onValueChange = { messageListViewModel.onTextChanged(it) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .border(1.dp, Color.Gray),
-                    singleLine = true,
-                )
-                Button(
-                    onClick = {
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
+                Column (
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                        .padding(16.dp)
                 ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                    } else {
-                        Text(text = "Send")
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = listState
+                    ) {
+                        items(messages) { message ->
+                            MessageItem(message)
+                        }
+
+                        if (isLoading) {
+                            item {
+                                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+                            }
+                        }
+                    }
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TextField(
+                            value = messageField,
+                            onValueChange = { messageListViewModel.onTextChanged(it) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .border(1.dp, Color.Gray),
+                            singleLine = true,
+                        )
+                        Button(
+                            onClick = {
+                            },
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                            } else {
+                                Text(text = "Send")
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
+    })
 }
 
 @Composable
