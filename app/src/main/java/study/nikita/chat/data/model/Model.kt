@@ -15,7 +15,7 @@ data class Message(
     val from: String,
     val to: String,
     val data: MessageData,
-    val timestamp: String
+    val time: Long
 )
 data class MessageData(
     val Text: Text,

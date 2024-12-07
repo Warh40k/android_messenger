@@ -1,7 +1,6 @@
 package study.nikita.chat.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,19 +28,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import study.nikita.chat.data.model.Chat
 import study.nikita.chat.data.model.Message
 import study.nikita.chat.data.viewmodel.ChatListViewModel
 import study.nikita.chat.data.viewmodel.MessageListViewModel
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ChatScreen(navController : NavController) {
@@ -142,8 +142,11 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
                         .padding(16.dp)
                 ) {
                     LazyColumn(
+                        modifier = Modifier
+                            .weight(1f),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState
+                        state = listState,
+                        reverseLayout = true
                     ) {
                         items(messages) { message ->
                             MessageItem(message)
@@ -214,6 +217,8 @@ fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatLi
 
 @Composable
 fun MessageItem(message: Message) {
+    val pattern = "yyyy-MM-dd HH:mm:ss.SSS"
+    val date = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(message.time))
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -226,6 +231,10 @@ fun MessageItem(message: Message) {
         ) {
             Text(text = message.from, style = MaterialTheme.typography.titleSmall)
             Text(text = message.data.Text.text, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = date,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
