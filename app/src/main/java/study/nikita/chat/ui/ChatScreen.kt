@@ -99,96 +99,6 @@ fun ChatAlbum(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
-    val messages by messageListViewModel.messages.collectAsState()
-    val selected by messageListViewModel.selected.collectAsState()
-    val messageField by messageListViewModel.messageInput.collectAsState()
-    val isLoading = messageListViewModel.isLoading
-
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(messages) {
-        if (messages.isEmpty() && selected != "") {
-            messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
-        }
-    }
-
-    LaunchedEffect(listState.firstVisibleItemIndex) {
-        if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {
-            messageListViewModel.getMessageList(selected, lastId = messages.last().id)
-        }
-    }
-
-    LaunchedEffect(selected) {
-        messageListViewModel.cleanMessageList()
-        messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(selected) },
-            )
-        },
-        content = { paddingValues ->
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                Column (
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                        .padding(16.dp)
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState,
-                        reverseLayout = true
-                    ) {
-                        items(messages) { message ->
-                            MessageItem(message)
-                        }
-
-                        if (isLoading) {
-                            item {
-                                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
-                            }
-                        }
-                    }
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        TextField(
-                            value = messageField,
-                            onValueChange = { messageListViewModel.onTextChanged(it) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .border(1.dp, Color.Gray),
-                            singleLine = true,
-                        )
-                        Button(
-                            onClick = {
-                            },
-                            modifier = Modifier.padding(start = 8.dp)
-                        ) {
-                            if (isLoading) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                            } else {
-                                Text(text = "Send")
-                            }
-                        }
-                    }
-                }
-            }
-    })
-}
-
 @Composable
 fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     val orientation = LocalConfiguration.current.orientation
@@ -211,30 +121,6 @@ fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatLi
                 }
             )
             Text(text = "Id: ${chat.id}", style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
-
-@Composable
-fun MessageItem(message: Message) {
-    val pattern = "yyyy-MM-dd HH:mm:ss.SSS"
-    val date = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(message.time))
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(text = message.from, style = MaterialTheme.typography.titleSmall)
-            Text(text = message.data.Text.text, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                text = date,
-                style = MaterialTheme.typography.bodySmall
-            )
         }
     }
 }
