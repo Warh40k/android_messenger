@@ -34,7 +34,7 @@ interface ApiService {
     suspend fun getThumb(@Path("path") path: String): Image
 
     @GET("/channel/{channel}")
-    suspend fun getMessages(@Path("channel") chatId: String): List<Message>
+    suspend fun getMessages(@Path("channel") chatId: String?): List<Message>
 
     companion object {
         const val BASE_URL = "https://faerytea.name:8008"

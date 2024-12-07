@@ -1,7 +1,7 @@
 package study.nikita.chat.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,33 +21,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import study.nikita.chat.data.model.Chat
+import study.nikita.chat.data.model.Message
 import study.nikita.chat.data.viewmodel.ChatListViewModel
+import study.nikita.chat.data.viewmodel.MessageListViewModel
 
 @Composable
-fun ChatScreen(navController : NavController, chatListViewModel: ChatListViewModel = viewModel()) {
-
+fun ChatScreen(navController : NavController) {
     when (LocalConfiguration.current.orientation) {
-        Configuration.ORIENTATION_PORTRAIT -> ChatPortrait(navController, chatListViewModel)
-        Configuration.ORIENTATION_LANDSCAPE -> ChatAlbum(navController, chatListViewModel)
+        Configuration.ORIENTATION_PORTRAIT -> ChatPortrait(navController)
+        Configuration.ORIENTATION_LANDSCAPE -> ChatAlbum(navController)
         else -> throw Exception("some kind of shit")
     }
 }
 
 @Composable
-fun ChatPortrait(navController: NavController, chatListViewModel: ChatListViewModel) {
-    ChatList(navController, chatListViewModel)
+fun ChatPortrait(navController: NavController) {
+    ChatList(navController)
 }
 
 @Composable
-fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel) {
+fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     val chanList by chatListViewModel.chatList.collectAsState()
-// Fetch data if the list is empty
+
     LaunchedEffect(chanList) {
         if (chanList.isEmpty()) {
             chatListViewModel.getChatList()
@@ -57,20 +58,20 @@ fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel)
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(chanList) { channel ->
-            CommentItem(channel)
+            ChatItem(channel, navController)
         }
     }
 }
 
 @Composable
-fun ChatAlbum(navController: NavController, chatListViewModel: ChatListViewModel) {
+fun ChatAlbum(navController: NavController) {
     Row (modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier
             .weight(1f)
             .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            ChatList(navController, chatListViewModel)
+            ChatList(navController)
         }
 
         Box(modifier = Modifier
@@ -78,18 +79,31 @@ fun ChatAlbum(navController: NavController, chatListViewModel: ChatListViewModel
             .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            MessageList(navController, chatListViewModel)
+            MessageList()
         }
     }
 }
 
 @Composable
-fun MessageList(navController: NavController, chatListViewModel: ChatListViewModel) {
+fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
+    val messages by messageListViewModel.messages.collectAsState()
+    val selected by messageListViewModel.selected.collectAsState()
 
+    if (selected != "") {
+        messageListViewModel.getMessageList(selected)
+    }
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(messages) { message ->
+            MessageItem(message)
+        }
+    }
 }
 
 @Composable
-fun CommentItem(chat: Chat) {
+fun ChatItem(chat: Chat, navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,8 +114,38 @@ fun CommentItem(chat: Chat) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(text = chat.name, style = MaterialTheme.typography.titleLarge)
+            Text(text = chat.name, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.clickable {
+                    chatListViewModel.selectChat(chat.name)
+                    navController.navigate("messages")
+                }
+            )
             Text(text = "Id: ${chat.id}", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun MessageItem(message: Message) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Box (
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = message.from, style = MaterialTheme.typography.titleLarge)
+                Text(text = message.data.text.text, style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }

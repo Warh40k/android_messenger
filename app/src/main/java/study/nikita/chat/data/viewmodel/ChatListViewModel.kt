@@ -2,18 +2,28 @@ package study.nikita.chat.data.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import study.nikita.chat.data.api.ApiService
 import study.nikita.chat.data.model.Chat
+import study.nikita.chat.data.repository.ChatRepository
 import java.util.LinkedList
+import javax.inject.Inject
 
-class ChatListViewModel : ViewModel() {
+@HiltViewModel
+class ChatListViewModel @Inject constructor(private val repository: ChatRepository) : ViewModel() {
     private var apiService : ApiService = ApiService.create()
     private var _chatList = MutableStateFlow<List<Chat>>(emptyList())
     val chatList: StateFlow<List<Chat>> get() = _chatList.asStateFlow()
+
+    val current: StateFlow<String> get() = repository.selectedChat
+
+    fun selectChat(chatID : String) {
+        repository.updateData(chatID)
+    }
 
     fun getChatList() {
         viewModelScope.launch {
