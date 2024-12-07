@@ -17,18 +17,23 @@ class MessageListViewModel @Inject constructor(private val repository: ChatRepos
     private var apiService : ApiService = ApiService.create()
     private var _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> get() = _messages.asStateFlow()
-
     val selected: StateFlow<String> = repository.selectedChat
+    var isLoading = false
 
-    fun getMessageList(channel : String?) {
+    fun getMessageList(channel : String?, lastId : Int = 0) {
+        if (isLoading) {
+            return
+        }
+        isLoading = true
         viewModelScope.launch {
             try {
-                val messagesList = apiService.getMessages(channel)
-                _messages.value = messagesList
+                val messagesList = apiService.getMessages(channel, lastKnownId = lastId, reverse = true)
+                _messages.value += messagesList
             } catch (e : Exception) {
                 println(e.message)
             }
         }
+        isLoading = false
     }
 
     fun selectChat(chatID : String) {

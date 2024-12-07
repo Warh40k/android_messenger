@@ -11,7 +11,7 @@ data class Chat(
 )
 @Entity(tableName = "messages")
 data class Message(
-    val id: String,
+    val id: Int,
     val from: String,
     val to: String,
     val data: MessageData,

@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import study.nikita.chat.data.model.Chat
 import study.nikita.chat.data.model.Message
@@ -55,7 +58,7 @@ fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel 
         }
     }
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(chanList) { channel ->
             ChatItem(channel, navController)
@@ -88,18 +91,34 @@ fun ChatAlbum(navController: NavController) {
 fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
+    val isLoading = messageListViewModel.isLoading
 
-    remember {
-        if (selected != "") {
-            messageListViewModel.getMessageList(selected)
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(messages) {
+        if (messages.isEmpty() && selected != "") {
+            messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
+        }
+    }
+
+    LaunchedEffect(listState.firstVisibleItemIndex) {
+        if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {
+            messageListViewModel.getMessageList(selected, lastId = messages.last().id)
         }
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        state = listState
     ) {
         items(messages) { message ->
             MessageItem(message)
+        }
+
+        if (isLoading) {
+            item {
+                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+            }
         }
     }
 }
