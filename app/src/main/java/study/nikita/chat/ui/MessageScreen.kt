@@ -48,19 +48,19 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
 
     LaunchedEffect(messages) {
         if (messages.isEmpty() && selected != "") {
-            messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
+            messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
         }
     }
 
     LaunchedEffect(listState.firstVisibleItemIndex) {
         if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {
-            messageListViewModel.getMessageList(selected, lastId = messages.last().id)
+            messageListViewModel.getMessageList(lastId = messages.last().id)
         }
     }
 
     LaunchedEffect(selected) {
         messageListViewModel.cleanMessageList()
-        messageListViewModel.getMessageList(selected, lastId = Int.MAX_VALUE)
+        messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
     }
 
     Scaffold(

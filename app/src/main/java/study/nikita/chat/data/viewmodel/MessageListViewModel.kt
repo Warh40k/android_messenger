@@ -56,14 +56,14 @@ class MessageListViewModel @Inject constructor(var repository: ChatRepository, v
         _messages.value = emptyList()
     }
 
-    fun getMessageList(channel : String?, lastId : Int = 0) {
+    fun getMessageList(lastId : Int = 0) {
         if (_isLoading.value) {
             return
         }
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val messagesList = apiService.getMessages(channel, lastKnownId = lastId, reverse = true)
+                val messagesList = apiService.getMessages(selected.value, lastKnownId = lastId, reverse = true)
                 _messages.value += messagesList
             } catch (e : Exception) {
                 println(e.message)
