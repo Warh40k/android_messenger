@@ -16,13 +16,3 @@ class ChatRepository {
         _selectedChat.value = newData
     }
 }
-
-@Module
-@InstallIn(SingletonComponent::class)
-object ChatRepositoryModule {
-    @Provides
-    @Singleton
-    fun provideRepository(): ChatRepository {
-        return ChatRepository()
-    }
-}

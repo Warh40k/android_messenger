@@ -1,10 +1,11 @@
-package study.nikita.chat.data.api.websocket
+package study.nikita.chat.data.network.websocket
 
 import okhttp3.*
 import okio.ByteString
+import study.nikita.chat.data.network.rest.createUnsafeOkHttpClient
 
 class ChatWebSocket {
-    private val client = OkHttpClient()
+    private val client = createUnsafeOkHttpClient()
     private var webSocket: WebSocket? = null
 
     fun connect(
@@ -42,7 +43,7 @@ class ChatWebSocket {
     }
 
     fun sendMessage(message: String) {
-        val result = webSocket?.send(message)
+        webSocket?.send(message)
     }
 
     fun disconnect() {

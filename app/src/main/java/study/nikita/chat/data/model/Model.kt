@@ -2,6 +2,7 @@ package study.nikita.chat.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "chats")
@@ -15,7 +16,7 @@ data class Message(
     val from: String,
     val to: String,
     val data: MessageData,
-    val time: Long
+    @Expose(serialize = false) val time: Long
 )
 data class MessageData(
     val Text: Text,

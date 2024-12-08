@@ -1,6 +1,8 @@
 package study.nikita.chat.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +62,6 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
 
     LaunchedEffect(selected) {
         messageListViewModel.cleanMessageList()
-        messageListViewModel.onChannelSelected()
         messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
     }
 

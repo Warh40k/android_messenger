@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import study.nikita.chat.data.api.rest.ApiService
+import study.nikita.chat.data.network.rest.ApiService
 import study.nikita.chat.data.model.LoginRequest
 import javax.inject.Inject
 
@@ -19,7 +19,6 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var _token = MutableLiveData<String?>()
-    val token: LiveData<String?> get() = _token
 
     fun getAuthToken(name : String, password : String) {
         viewModelScope.launch {
@@ -27,7 +26,7 @@ class AuthViewModel @Inject constructor(
                 val gson = Gson()
                 _token.value = apiService.login(gson.toJson(LoginRequest(name, password)))
                 authRepository.saveAuthToken(_token.value.toString())
-                println(_token.value)
+                authRepository.saveUsername(name)
             } catch (e : Exception) {
                 println(e.message)
             }
