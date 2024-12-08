@@ -43,6 +43,7 @@ import java.time.format.DateTimeFormatter
 fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
+    val incoming by messageListViewModel.incomingMsg.collectAsState()
     val messageField by messageListViewModel.messageInput.collectAsState()
     val isLoading by messageListViewModel.isLoading.collectAsState()
 
@@ -63,6 +64,10 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
     LaunchedEffect(selected) {
         messageListViewModel.cleanMessageList()
         messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
+    }
+
+    LaunchedEffect(incoming) {
+        messageListViewModel.receiveNewMessage()
     }
 
     Scaffold(

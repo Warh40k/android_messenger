@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import study.nikita.chat.data.network.rest.ApiService
 import study.nikita.chat.data.network.websocket.ChatWebSocket
@@ -33,6 +34,7 @@ class MessageListViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
     val selected: StateFlow<String> get() = repository.selectedChat
+    val incomingMsg: StateFlow<List<Message>> get() = repository.newMessages
 
 
     private var _messageInput = MutableStateFlow("")
@@ -68,6 +70,18 @@ class MessageListViewModel @Inject constructor(
             }
         }
         _isLoading.value = false
+    }
+
+    fun receiveNewMessage() {
+        if (incomingMsg.value.isEmpty()) {
+            return
+        }
+        val message = repository.popIncomingMessage()
+
+        if (selected.value + "@channel" != message.to) {
+            return
+        }
+        _messages.value = listOf(message) + _messages.value
     }
 
     fun sendMessage() {

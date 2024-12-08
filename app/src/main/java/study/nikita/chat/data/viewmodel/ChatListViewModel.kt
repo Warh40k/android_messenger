@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import study.nikita.chat.Config
 import study.nikita.chat.data.network.rest.ApiService
 import study.nikita.chat.data.model.Chat
+import study.nikita.chat.data.model.Message
 import study.nikita.chat.data.network.websocket.ChatWebSocket
 import study.nikita.chat.data.network.websocket.WebSocketEvent
 import study.nikita.chat.data.repository.AuthRepository
@@ -76,22 +77,20 @@ class ChatListViewModel @Inject constructor(
         }
     }
 
-    private fun parseWebSocketMessage(json: String): WebSocketEvent? {
+    private fun parseWebSocketMessage(json: String) {
         val gson = Gson()
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        var event : WebSocketEvent? = null
         try {
-            event = when {
-                jsonObject.has("NewMessage") -> gson.fromJson(json, WebSocketEvent.NewMessage::class.java)
-                jsonObject.has("NewMessageText") -> gson.fromJson(json, WebSocketEvent.NewMessageText::class.java)
-                else -> null
+            if (jsonObject.has("NewMessage")) {
+                val event = gson.fromJson(json, WebSocketEvent.NewMessage::class.java)
+                repository.addIncomingMessage(event.message.msg)
+            }
+            if (jsonObject.has("NewMessageText")) {
+                gson.fromJson(json, WebSocketEvent.NewMessageText::class.java)
             }
         } catch (e : Exception) {
             println(e.message)
         }
-
-
-        return event
     }
 }
 
