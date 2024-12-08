@@ -1,8 +1,8 @@
 package study.nikita.chat.ui
 
-import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import study.nikita.chat.Config
 import study.nikita.chat.data.model.Message
 import study.nikita.chat.data.viewmodel.MessageListViewModel
 import java.time.Instant
@@ -40,7 +44,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
+fun MessageList(navController: NavController, messageListViewModel: MessageListViewModel = hiltViewModel()) {
     val messages by messageListViewModel.messages.collectAsState()
     val selected by messageListViewModel.selected.collectAsState()
     val incoming by messageListViewModel.incomingMsg.collectAsState()
@@ -93,7 +97,7 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
                         reverseLayout = true
                     ) {
                         items(messages) { message ->
-                            MessageItem(message)
+                            MessageItem(message, navController)
                         }
 
                         if (isLoading) {
@@ -137,7 +141,7 @@ fun MessageList(messageListViewModel: MessageListViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun MessageItem(message: Message) {
+fun MessageItem(message: Message, navController: NavController) {
     val pattern = "yyyy-MM-dd HH:mm:ss.SSS"
     val date = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(message.time))
     Card(
@@ -150,6 +154,17 @@ fun MessageItem(message: Message) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            if (message.data.Image != null) {
+                AsyncImage(
+                    modifier = Modifier.fillMaxWidth()
+                        .clickable {
+                            navController.navigate("fullscreen/${message.data.Image.link}")
+                        },
+                    contentScale = ContentScale.Crop,
+                    model = Config.BASE_URL + "thumb/" + message.data.Image.link,
+                    contentDescription = null
+                )
+            }
             Text(text = message.from, style = MaterialTheme.typography.titleSmall)
             Text(text = message.data.Text.text, style = MaterialTheme.typography.bodyMedium)
             Text(
@@ -157,5 +172,23 @@ fun MessageItem(message: Message) {
                 style = MaterialTheme.typography.bodySmall
             )
         }
+    }
+}
+
+@Composable
+fun FullScreenImage(imageUrl: String, onBack : () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        AsyncImage(
+            model = Config.BASE_URL + "image/" + imageUrl,
+            contentDescription = "Full Screen Image",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onBack() }
+        )
     }
 }

@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import study.nikita.chat.data.network.rest.ApiService
 import study.nikita.chat.data.network.websocket.ChatWebSocket
@@ -99,7 +98,7 @@ class MessageListViewModel @Inject constructor(
             to = selected.value,
             data = MessageData(
                 Text(messageInput.value),
-                image = null
+                Image = null
             ),
             time = 0
         )

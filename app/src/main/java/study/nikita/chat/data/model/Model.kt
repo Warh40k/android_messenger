@@ -20,7 +20,7 @@ data class Message(
 )
 data class MessageData(
     val Text: Text,
-    val image: Image?
+    val Image: Image?
 )
 data class Text(
     val text: String
@@ -33,7 +33,7 @@ data class User(
 @Entity(tableName="images")
 data class Image(
     @PrimaryKey val id: String,
-    val data: String
+    val link : String
 )
 data class LoginRequest(
     @SerializedName("name") val name: String,

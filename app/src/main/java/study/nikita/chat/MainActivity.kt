@@ -12,11 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import study.nikita.chat.ui.ChatScreen
+import study.nikita.chat.ui.FullScreenImage
 import study.nikita.chat.ui.MessageList
 import study.nikita.chat.ui.theme.ChadTheme
 
@@ -35,7 +38,17 @@ class MainActivity : ComponentActivity() {
                         NavHost(navController = navController, startDestination = if (authToken.isNullOrEmpty()) "auth" else "main") {
                             composable("auth") { AuthScreen(authRepository, navController) }
                             composable("main") { ChatScreen(navController) }
-                            composable("messages") { MessageList() }
+                            composable("messages") { MessageList(navController) }
+                            // Full-screen image
+                            composable(
+                                route = "full_screen_image/{imageUrl}",
+                                arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+                                FullScreenImage(imageUrl) {
+                                    navController.popBackStack()
+                                }
+                            }
                         }
                     }
                 }

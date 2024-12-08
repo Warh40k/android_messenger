@@ -93,7 +93,7 @@ fun ChatAlbum(navController: NavController) {
             .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            MessageList()
+            MessageList(navController)
         }
     }
 }
