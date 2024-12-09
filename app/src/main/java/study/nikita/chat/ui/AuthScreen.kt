@@ -17,6 +17,21 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+    val errorMessage by authViewModel.error.collectAsState()
+
+    if (errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { authViewModel.clearError() }, // Close dialog on outside touch
+            title = { Text("Error") },  // Title of the dialog
+            text = { Text(errorMessage ?: "") }, // Content/message
+            confirmButton = {
+                Button(onClick = { authViewModel.clearError() }) {
+                    Text("OK")
+                }
+            },
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

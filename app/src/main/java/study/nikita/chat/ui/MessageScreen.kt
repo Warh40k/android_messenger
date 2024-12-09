@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,11 +58,20 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-/*    LaunchedEffect(messages) {
-        if (messages.isEmpty() && selected != "") {
-            messageListViewModel.getMessageList(context, lastId = Int.MAX_VALUE)
-        }
-    }*/
+    val errorMessage by messageListViewModel.error.collectAsState()
+
+    if (errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { messageListViewModel.clearError() }, // Close dialog on outside touch
+            title = { Text("Error") },  // Title of the dialog
+            text = { Text(errorMessage ?: "") }, // Content/message
+            confirmButton = {
+                Button(onClick = { messageListViewModel.clearError() }) {
+                    Text("OK")
+                }
+            },
+        )
+    }
 
     LaunchedEffect(remember { derivedStateOf { listState.firstVisibleItemIndex } }) {
         if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {

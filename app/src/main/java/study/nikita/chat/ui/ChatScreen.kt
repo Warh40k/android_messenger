@@ -14,22 +14,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -80,7 +78,6 @@ fun ChatList(navController: NavController) {
             }
         }
 
-        // Content
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
@@ -97,10 +94,25 @@ fun TabContent(page : Int, navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelList(navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     val chanList by chatListViewModel.chatList.collectAsState()
     val context = LocalContext.current
+    val errorMessage by chatListViewModel.error.collectAsState()
+
+    if (errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { chatListViewModel.clearError() }, // Close dialog on outside touch
+            title = { Text("Error") },  // Title of the dialog
+            text = { Text(errorMessage ?: "") }, // Content/message
+            confirmButton = {
+                Button(onClick = { chatListViewModel.clearError() }) {
+                    Text("OK")
+                }
+            },
+        )
+    }
 
     LaunchedEffect(chanList) {
         if (chanList.isEmpty()) {

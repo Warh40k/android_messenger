@@ -31,6 +31,13 @@ class ChatListViewModel @Inject constructor(
     private var _chatList = MutableStateFlow<List<Chat>>(emptyList())
     val chatList: StateFlow<List<Chat>> get() = _chatList.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error : StateFlow<String?> get() = _error.asStateFlow()
+
+    fun clearError() {
+        _error.value = null
+    }
+
     init {
         val token = authRepository.getAuthToken()
         val name = authRepository.getUsername()
@@ -79,6 +86,7 @@ class ChatListViewModel @Inject constructor(
                 }
                 _chatList.value = chanList
             } catch (e : Exception) {
+                _error.value = "Произошла ошибка при получении списка чатов: ${e.message}"
                 println(e.message)
             }
         }
@@ -96,6 +104,7 @@ class ChatListViewModel @Inject constructor(
                 gson.fromJson(json, WebSocketEvent.NewMessageText::class.java)
             }
         } catch (e : Exception) {
+            _error.value = "Произошла ошибка при обработке WebSocket: ${e.message}"
             println(e.message)
         }
     }

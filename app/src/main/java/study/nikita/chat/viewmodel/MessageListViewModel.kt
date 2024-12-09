@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import study.nikita.chat.network.NetworkUtils
 import study.nikita.chat.network.rest.ApiService
-import study.nikita.chat.network.rest.Image
 import study.nikita.chat.network.websocket.ChatWebSocket
 import study.nikita.chat.network.rest.Message
 import study.nikita.chat.network.rest.MessageData
@@ -26,8 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MessageListViewModel @Inject constructor(
-    var chatRepository: ChatRepository,
-    var messageRepository: MessageRepository,
+    private var chatRepository: ChatRepository,
+    private var messageRepository: MessageRepository,
     private val chatWebSocket: ChatWebSocket,
     private val authRepository: AuthRepository,
     private val apiService: ApiService
@@ -41,6 +40,12 @@ class MessageListViewModel @Inject constructor(
     val selected: StateFlow<String> get() = chatRepository.selectedChat
     val incomingMsg: StateFlow<List<Message>> get() = chatRepository.newMessages
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error : StateFlow<String?> get() = _error.asStateFlow()
+
+    fun clearError() {
+        _error.value = null
+    }
 
     private var _messageInput = MutableStateFlow("")
     var messageInput: StateFlow<String>
@@ -77,6 +82,7 @@ class MessageListViewModel @Inject constructor(
                 }
                 _messages.value += messagesList
             } catch (e : Exception) {
+                _error.value = "Ошибка при получении списка сообщений: ${e.message}"
                 println(e.message)
             }
         }
