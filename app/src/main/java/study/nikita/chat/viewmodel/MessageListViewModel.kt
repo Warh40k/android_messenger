@@ -1,5 +1,6 @@
-package study.nikita.chat.data.viewmodel
+package study.nikita.chat.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -8,20 +9,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import study.nikita.chat.data.network.rest.ApiService
-import study.nikita.chat.data.network.websocket.ChatWebSocket
-import study.nikita.chat.data.model.Message
-import study.nikita.chat.data.model.MessageData
-import study.nikita.chat.data.model.Text
-import study.nikita.chat.data.network.websocket.NewMessageTextData
-import study.nikita.chat.data.network.websocket.WebSocketEvent
-import study.nikita.chat.data.repository.AuthRepository
-import study.nikita.chat.data.repository.ChatRepository
+import study.nikita.chat.network.NetworkUtils
+import study.nikita.chat.network.rest.ApiService
+import study.nikita.chat.network.rest.Image
+import study.nikita.chat.network.websocket.ChatWebSocket
+import study.nikita.chat.network.rest.Message
+import study.nikita.chat.network.rest.MessageData
+import study.nikita.chat.network.rest.Text
+import study.nikita.chat.network.websocket.NewMessageTextData
+import study.nikita.chat.network.websocket.WebSocketEvent
+import study.nikita.chat.repository.AuthRepository
+import study.nikita.chat.repository.ChatRepository
+import study.nikita.chat.repository.MessageRepository
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
 class MessageListViewModel @Inject constructor(
-    var repository: ChatRepository,
+    var chatRepository: ChatRepository,
+    var messageRepository: MessageRepository,
     private val chatWebSocket: ChatWebSocket,
     private val authRepository: AuthRepository,
     private val apiService: ApiService
@@ -32,8 +38,8 @@ class MessageListViewModel @Inject constructor(
     private var _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
 
-    val selected: StateFlow<String> get() = repository.selectedChat
-    val incomingMsg: StateFlow<List<Message>> get() = repository.newMessages
+    val selected: StateFlow<String> get() = chatRepository.selectedChat
+    val incomingMsg: StateFlow<List<Message>> get() = chatRepository.newMessages
 
 
     private var _messageInput = MutableStateFlow("")
@@ -55,14 +61,20 @@ class MessageListViewModel @Inject constructor(
         _messageInput.value = ""
     }
 
-    fun getMessageList(lastId : Int = 0) {
+    fun getMessageList(context: Context, lastId : Int = 0) {
         if (_isLoading.value) {
             return
         }
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val messagesList = apiService.getMessages(selected.value, lastKnownId = lastId, reverse = true)
+                val messagesList : List<Message>
+                if (NetworkUtils(context).isInternetAvailable()) {
+                    messagesList = apiService.getMessages(selected.value, lastKnownId = lastId, reverse = true)
+                    messageRepository.insertAllMessages(messagesList)
+                } else {
+                    messagesList = messageRepository.getChatMessages(selected.value)
+                }
                 _messages.value += messagesList
             } catch (e : Exception) {
                 println(e.message)
@@ -75,7 +87,7 @@ class MessageListViewModel @Inject constructor(
         if (incomingMsg.value.isEmpty()) {
             return
         }
-        val message = repository.popIncomingMessage()
+        val message = chatRepository.popIncomingMessage()
 
         if (selected.value + "@channel" != message.to) {
             return
@@ -97,10 +109,10 @@ class MessageListViewModel @Inject constructor(
             from = authRepository.getUsername() ?: "",
             to = selected.value,
             data = MessageData(
-                Text(messageInput.value),
-                Image = null
+                text = Text(text = messageInput.value),
+                image = null
             ),
-            time = 0
+            time = LocalTime.now().second.toLong()
         )
 
         chatWebSocket.sendMessage(gson.toJson(messageText))

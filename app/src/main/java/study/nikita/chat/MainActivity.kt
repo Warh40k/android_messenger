@@ -1,6 +1,6 @@
 package study.nikita.chat
 
-import study.nikita.chat.data.repository.AuthRepository
+import study.nikita.chat.repository.AuthRepository
 import AuthScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity

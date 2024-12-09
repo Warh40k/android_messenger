@@ -1,7 +1,7 @@
-package study.nikita.chat.data.network.websocket
+package study.nikita.chat.network.websocket
 
 import com.google.gson.annotations.SerializedName
-import study.nikita.chat.data.model.Message
+import study.nikita.chat.network.rest.Message
 
 sealed class WebSocketEvent {
     data class TypingChanged(

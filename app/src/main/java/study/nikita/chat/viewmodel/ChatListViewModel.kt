@@ -1,5 +1,6 @@
-package study.nikita.chat.data.viewmodel
+package study.nikita.chat.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -10,13 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import study.nikita.chat.Config
-import study.nikita.chat.data.network.rest.ApiService
-import study.nikita.chat.data.model.Chat
-import study.nikita.chat.data.model.Message
-import study.nikita.chat.data.network.websocket.ChatWebSocket
-import study.nikita.chat.data.network.websocket.WebSocketEvent
-import study.nikita.chat.data.repository.AuthRepository
-import study.nikita.chat.data.repository.ChatRepository
+import study.nikita.chat.network.NetworkUtils
+import study.nikita.chat.network.rest.ApiService
+import study.nikita.chat.network.rest.Chat
+import study.nikita.chat.network.websocket.ChatWebSocket
+import study.nikita.chat.network.websocket.WebSocketEvent
+import study.nikita.chat.repository.AuthRepository
+import study.nikita.chat.repository.ChatRepository
 import java.util.LinkedList
 import javax.inject.Inject
 
@@ -55,20 +56,26 @@ class ChatListViewModel @Inject constructor(
         repository.setSelectedChat(chatID)
     }
 
-    fun getChatList() {
+    fun getChatList(context: Context) {
         viewModelScope.launch {
             try {
-                val chatNames = apiService.getChannels()
-                val chanList = LinkedList<Chat>()
-                var k = 1
-                for (i in chatNames) {
-                    val comps = i.split("@").toTypedArray()
-                    if (comps.isEmpty()) {
-                        k++
-                        continue
+                val chanList : List<Chat>
+                if (NetworkUtils(context).isInternetAvailable()) {
+                    val chatNames = apiService.getChannels()
+                    chanList = LinkedList<Chat>()
+                    var k = 1
+                    for (i in chatNames) {
+                        val comps = i.split("@").toTypedArray()
+                        if (comps.isEmpty()) {
+                            k++
+                            continue
+                        }
+                        val name = comps.component1()
+                        chanList.add(Chat((k++).toString(), name))
                     }
-                    val name = comps.component1()
-                    chanList.add(Chat((k++).toString(), name))
+                    repository.saveChatsToDb(chanList)
+                } else {
+                    chanList = repository.getChatsFromDb()
                 }
                 _chatList.value = chanList
             } catch (e : Exception) {

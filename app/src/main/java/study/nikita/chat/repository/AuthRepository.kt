@@ -1,4 +1,4 @@
-package study.nikita.chat.data.repository
+package study.nikita.chat.repository
 
 import android.content.Context
 import android.content.SharedPreferences

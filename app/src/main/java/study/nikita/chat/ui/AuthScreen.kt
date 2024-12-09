@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import study.nikita.chat.data.viewmodel.AuthViewModel
+import study.nikita.chat.viewmodel.AuthViewModel
 import androidx.navigation.NavController
-import study.nikita.chat.data.repository.AuthRepository
+import study.nikita.chat.repository.AuthRepository
 
 @Composable
 fun AuthScreen(authRepository: AuthRepository, navController: NavController, authViewModel: AuthViewModel = hiltViewModel()) {

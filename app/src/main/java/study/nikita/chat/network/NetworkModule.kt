@@ -1,4 +1,4 @@
-package study.nikita.chat.data.network
+package study.nikita.chat.network
 
 import dagger.Module
 import dagger.Provides
@@ -8,9 +8,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import study.nikita.chat.Config
-import study.nikita.chat.data.network.rest.ApiService
-import study.nikita.chat.data.network.rest.createUnsafeOkHttpClient
-import study.nikita.chat.data.network.websocket.ChatWebSocket
+import study.nikita.chat.network.rest.ApiService
+import study.nikita.chat.network.rest.createUnsafeOkHttpClient
+import study.nikita.chat.network.websocket.ChatWebSocket
 import javax.inject.Singleton
 
 @Module

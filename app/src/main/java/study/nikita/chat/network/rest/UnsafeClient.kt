@@ -1,4 +1,4 @@
-package study.nikita.chat.data.network.rest
+package study.nikita.chat.network.rest
 
 import okhttp3.OkHttpClient
 import javax.net.ssl.HostnameVerifier

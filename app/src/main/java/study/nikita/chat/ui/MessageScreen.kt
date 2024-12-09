@@ -26,18 +26,21 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import study.nikita.chat.Config
-import study.nikita.chat.data.model.Message
-import study.nikita.chat.data.viewmodel.MessageListViewModel
+import study.nikita.chat.network.rest.Message
+import study.nikita.chat.viewmodel.MessageListViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -52,26 +55,29 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
     val isLoading by messageListViewModel.isLoading.collectAsState()
 
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
-    LaunchedEffect(messages) {
+/*    LaunchedEffect(messages) {
         if (messages.isEmpty() && selected != "") {
-            messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
+            messageListViewModel.getMessageList(context, lastId = Int.MAX_VALUE)
         }
-    }
+    }*/
 
-    LaunchedEffect(listState.firstVisibleItemIndex) {
+    LaunchedEffect(remember { derivedStateOf { listState.firstVisibleItemIndex } }) {
         if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {
-            messageListViewModel.getMessageList(lastId = messages.last().id)
+            messageListViewModel.getMessageList(context, lastId = messages.last().id)
         }
     }
 
     LaunchedEffect(selected) {
         messageListViewModel.cleanMessageList()
-        messageListViewModel.getMessageList(lastId = Int.MAX_VALUE)
+        messageListViewModel.getMessageList(context, lastId = Int.MAX_VALUE)
     }
 
     LaunchedEffect(incoming) {
-        messageListViewModel.receiveNewMessage()
+        if (incoming.isNotEmpty()) {
+            messageListViewModel.receiveNewMessage()
+        }
     }
 
     Scaffold(
@@ -154,19 +160,19 @@ fun MessageItem(message: Message, navController: NavController) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            if (message.data.Image != null) {
+            if (message.data?.image != null) {
                 AsyncImage(
                     modifier = Modifier.fillMaxWidth()
                         .clickable {
-                            navController.navigate("fullscreen/${message.data.Image.link}")
+                            navController.navigate("fullscreen/${message.data.image.link}")
                         },
                     contentScale = ContentScale.Crop,
-                    model = Config.BASE_URL + "thumb/" + message.data.Image.link,
+                    model = Config.BASE_URL + "thumb/" + message.data.image.link,
                     contentDescription = null
                 )
             }
             Text(text = message.from, style = MaterialTheme.typography.titleSmall)
-            Text(text = message.data.Text.text, style = MaterialTheme.typography.bodyMedium)
+            Text(text = message.data?.text?.text ?: "", style = MaterialTheme.typography.bodyMedium)
             Text(
                 text = date,
                 style = MaterialTheme.typography.bodySmall

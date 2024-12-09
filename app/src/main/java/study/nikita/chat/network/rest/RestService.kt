@@ -1,12 +1,6 @@
-package study.nikita.chat.data.network.rest
+package study.nikita.chat.network.rest
 
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import study.nikita.chat.data.model.Message
 import retrofit2.http.*
-import study.nikita.chat.data.model.Image
-import study.nikita.chat.data.model.User
 
 interface ApiService {
     @POST("/login")
@@ -25,7 +19,7 @@ interface ApiService {
     suspend fun getChannels(): List<String>
 
     @GET("/users")
-    suspend fun getUsers(): List<User>
+    suspend fun getUsers(): List<String>
 
     @GET("/img/{path}")
     suspend fun getImage(@Path("path") path: String): Image

@@ -1,8 +1,8 @@
-package study.nikita.chat.data.network.websocket
+package study.nikita.chat.network.websocket
 
 import okhttp3.*
 import okio.ByteString
-import study.nikita.chat.data.network.rest.createUnsafeOkHttpClient
+import study.nikita.chat.network.rest.createUnsafeOkHttpClient
 
 class ChatWebSocket {
     private val client = createUnsafeOkHttpClient()

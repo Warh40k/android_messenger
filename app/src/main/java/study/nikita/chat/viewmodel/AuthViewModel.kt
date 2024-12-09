@@ -1,15 +1,14 @@
-package study.nikita.chat.data.viewmodel
+package study.nikita.chat.viewmodel
 
-import study.nikita.chat.data.repository.AuthRepository
-import androidx.lifecycle.LiveData
+import study.nikita.chat.repository.AuthRepository
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import study.nikita.chat.data.network.rest.ApiService
-import study.nikita.chat.data.model.LoginRequest
+import study.nikita.chat.network.rest.ApiService
+import study.nikita.chat.network.rest.LoginRequest
 import javax.inject.Inject
 
 @HiltViewModel
