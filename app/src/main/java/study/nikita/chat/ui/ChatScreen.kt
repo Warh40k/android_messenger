@@ -12,13 +12,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import study.nikita.chat.network.rest.Chat
 import study.nikita.chat.viewmodel.ChatListViewModel
 
@@ -44,7 +56,49 @@ fun ChatPortrait(navController: NavController) {
 }
 
 @Composable
-fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
+fun ChatList(navController: NavController) {
+    val pagerState = rememberPagerState(pageCount = {1})
+    val tabs = listOf("Channels")
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ScrollableTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab (
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        // Content
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            TabContent(page, navController)
+        }
+    }
+}
+
+@Composable
+fun TabContent(page : Int, navController: NavController) {
+    when (page) {
+        0 -> ChannelList(navController)
+    }
+}
+
+@Composable
+fun ChannelList(navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     val chanList by chatListViewModel.chatList.collectAsState()
     val context = LocalContext.current
 
@@ -53,13 +107,11 @@ fun ChatList(navController: NavController, chatListViewModel: ChatListViewModel 
             chatListViewModel.getChatList(context)
         }
     }
-    Column {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(chanList) { channel ->
-                ChatItem(channel, navController)
-            }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(chanList) { channel ->
+            ChatItem(channel, navController)
         }
     }
 }
