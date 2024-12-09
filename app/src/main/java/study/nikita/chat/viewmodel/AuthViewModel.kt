@@ -20,7 +20,8 @@ class AuthViewModel @Inject constructor(
     private val apiService: ApiService,
 ) : ViewModel() {
 
-    private var _token = MutableLiveData<String?>()
+    private var _token = MutableStateFlow<String?>(null)
+    val token : StateFlow<String?> get() = _token.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
     val error : StateFlow<String?> get() = _error.asStateFlow()

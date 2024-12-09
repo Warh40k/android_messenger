@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import study.nikita.chat.viewmodel.AuthViewModel
@@ -17,6 +18,7 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+    val token by authViewModel.token.collectAsState()
     val errorMessage by authViewModel.error.collectAsState()
 
     if (errorMessage != null) {
@@ -32,6 +34,10 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
         )
     }
 
+    if (!token.isNullOrEmpty()) {
+        navController.navigate("main")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,6 +45,7 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Text("Login")
         TextField(
             value = name,
             onValueChange = { name = it },
@@ -50,6 +57,7 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
         )
         Spacer(modifier = Modifier.height(8.dp))
 
+        Text("Password")
         TextField(
             value = password,
             onValueChange = { password = it },
@@ -57,7 +65,8 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
                 .fillMaxWidth()
                 .padding(8.dp)
                 .border(1.dp, Color.Gray),
-            singleLine = true
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -72,11 +81,7 @@ fun AuthScreen(authRepository: AuthRepository, navController: NavController, aut
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
-                Text(text = "Login")
-            }
-
-            if (!authRepository.getAuthToken().isNullOrEmpty()) {
-                navController.navigate("main")
+                Text(text = "Auth")
             }
         }
 

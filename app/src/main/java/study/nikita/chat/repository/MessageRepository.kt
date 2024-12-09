@@ -31,7 +31,7 @@ class MessageRepository @Inject constructor(private val dao : MessageDao) {
             messages.add(message)
         }
 
-        return messages
+        return messages.reversed()
     }
 
     suspend fun insertMessage(msg : Message) {
