@@ -95,7 +95,7 @@ class MessageListViewModel @Inject constructor(
         }
         val message = chatRepository.popIncomingMessage()
 
-        if (selected.value + "@channel" != message.to) {
+        if (selected.value != message.to) {
             return
         }
         _messages.value = listOf(message) + _messages.value

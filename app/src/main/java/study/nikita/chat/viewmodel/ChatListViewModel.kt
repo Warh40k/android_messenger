@@ -72,13 +72,7 @@ class ChatListViewModel @Inject constructor(
                     chanList = LinkedList<Chat>()
                     var k = 1
                     for (i in chatNames) {
-                        val comps = i.split("@").toTypedArray()
-                        if (comps.isEmpty()) {
-                            k++
-                            continue
-                        }
-                        val name = comps.component1()
-                        chanList.add(Chat((k++).toString(), name))
+                        chanList.add(Chat((k++).toString(), i))
                     }
                     repository.saveChatsToDb(chanList)
                 } else {
