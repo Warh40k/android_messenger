@@ -90,7 +90,7 @@ class MessageListViewModel @Inject constructor(
     }
 
     fun receiveNewMessage() {
-        if (incomingMsg.value.isEmpty()) {
+        if (incomingMsg.value.isEmpty() || incomingMsg.value.first().from == authRepository.getUsername()) {
             return
         }
         val message = chatRepository.popIncomingMessage()
