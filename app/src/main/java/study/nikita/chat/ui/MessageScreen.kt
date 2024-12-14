@@ -1,5 +1,6 @@
 package study.nikita.chat.ui
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -174,7 +175,7 @@ fun MessageItem(message: Message, navController: NavController) {
                 AsyncImage(
                     modifier = Modifier.fillMaxWidth()
                         .clickable {
-                            navController.navigate("fullscreen/${message.data.image.link}")
+                            navController.navigate("fullscreen/${Uri.encode(message.data.image.link)}")
                         },
                     contentScale = ContentScale.Crop,
                     model = Config.BASE_URL + "thumb/" + message.data.image.link,
@@ -199,7 +200,7 @@ fun FullScreenImage(imageUrl: String, onBack : () -> Unit) {
             .background(Color.Black)
     ) {
         AsyncImage(
-            model = Config.BASE_URL + "image/" + imageUrl,
+            model = Config.BASE_URL + "img/" + Uri.decode(imageUrl),
             contentDescription = "Full Screen Image",
             contentScale = ContentScale.Fit,
             modifier = Modifier

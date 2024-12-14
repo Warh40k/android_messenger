@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             composable("messages") { MessageList(navController) }
                             // Full-screen image
                             composable(
-                                route = "full_screen_image/{imageUrl}",
+                                route = "fullscreen/{imageUrl}",
                                 arguments = listOf(navArgument("imageUrl") { type = NavType.StringType })
                             ) { backStackEntry ->
                                 val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""

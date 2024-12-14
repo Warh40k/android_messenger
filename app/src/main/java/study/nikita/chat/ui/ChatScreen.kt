@@ -94,7 +94,6 @@ fun TabContent(page : Int, navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelList(navController: NavController, chatListViewModel: ChatListViewModel = hiltViewModel()) {
     val chanList by chatListViewModel.chatList.collectAsState()
