@@ -66,19 +66,24 @@ class ChatListViewModel @Inject constructor(
     fun getChatList(context: Context) {
         viewModelScope.launch {
             try {
-                val chanList : List<Chat>
+                val chatList : List<Chat>
                 if (NetworkUtils(context).isInternetAvailable()) {
-                    val chatNames = apiService.getChannels()
-                    chanList = LinkedList<Chat>()
+                    val channelNames = apiService.getChannels()
+                    val userNames = apiService.getUsers()
+                    chatList = LinkedList<Chat>()
+
                     var k = 1
-                    for (i in chatNames) {
-                        chanList.add(Chat((k++).toString(), i))
+                    for (i in channelNames) {
+                        chatList.add(Chat((k++).toString(), i))
                     }
-                    repository.saveChatsToDb(chanList)
+                    for (i in userNames) {
+                        chatList.add(Chat((k++).toString(), i))
+                    }
+                    repository.saveChatsToDb(chatList)
                 } else {
-                    chanList = repository.getChatsFromDb()
+                    chatList = repository.getChatsFromDb()
                 }
-                _chatList.value = chanList
+                _chatList.value = chatList
             } catch (e : Exception) {
                 _error.value = "Произошла ошибка при получении списка чатов: ${e.message}"
                 println(e.message)

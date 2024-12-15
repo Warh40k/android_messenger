@@ -1,6 +1,7 @@
 package study.nikita.chat.ui
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,7 +75,7 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
         )
     }
 
-    LaunchedEffect(remember { derivedStateOf { listState.firstVisibleItemIndex } }) {
+    LaunchedEffect(listState.firstVisibleItemIndex) {
         if (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == messages.size - 1) {
             messageListViewModel.getMessageList(context, lastId = messages.last().id)
         }
@@ -194,6 +195,8 @@ fun MessageItem(message: Message, navController: NavController) {
 
 @Composable
 fun FullScreenImage(imageUrl: String, onBack : () -> Unit) {
+    BackHandler(onBack = onBack)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
