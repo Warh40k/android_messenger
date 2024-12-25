@@ -66,6 +66,13 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
     val messageField by messageListViewModel.messageInput.collectAsState()
     val isLoading by messageListViewModel.isLoading.collectAsState()
 
+    val enabled = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE && messages.isNotEmpty()
+    BackHandler(enabled = enabled) {
+        messageListViewModel.cleanSelected()
+        messageListViewModel.cleanMessageList()
+        navController.popBackStack()
+    }
+
     val listState = rememberLazyListState()
     val context = LocalContext.current
 

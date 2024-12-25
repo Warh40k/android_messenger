@@ -62,6 +62,10 @@ class MessageListViewModel @Inject constructor(
         _messages.value = emptyList()
     }
 
+    fun cleanSelected() {
+        chatRepository.setSelectedChat("")
+    }
+
     fun cleanUserInput() {
         _messageInput.value = ""
     }
