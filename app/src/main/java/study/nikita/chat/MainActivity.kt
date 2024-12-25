@@ -21,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import study.nikita.chat.ui.ChatScreen
 import study.nikita.chat.ui.FullScreenImage
 import study.nikita.chat.ui.MessageList
+import study.nikita.chat.ui.MessageScreen
 import study.nikita.chat.ui.theme.ChadTheme
 
 @AndroidEntryPoint
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(navController = navController, startDestination = if (authToken.isNullOrEmpty()) "auth" else "main") {
                             composable("auth") { AuthScreen(authRepository, navController) }
                             composable("main") { ChatScreen(navController) }
-                            composable("messages") { MessageList(navController) }
+                            composable("messages") { MessageScreen(navController) }
                             // Full-screen image
                             composable(
                                 route = "fullscreen/{imageUrl}",

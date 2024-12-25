@@ -1,5 +1,6 @@
 package study.nikita.chat.ui
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +47,15 @@ import study.nikita.chat.viewmodel.MessageListViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+@Composable
+fun MessageScreen(navController : NavController) {
+    when (LocalConfiguration.current.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> MessageList(navController)
+        Configuration.ORIENTATION_LANDSCAPE -> ChatAlbum(navController)
+        else -> throw Exception("some kind of shit")
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
