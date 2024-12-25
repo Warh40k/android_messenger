@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "study.nikita.chat"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "study.nikita.chat"
@@ -64,8 +64,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.okhttp)
-    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
