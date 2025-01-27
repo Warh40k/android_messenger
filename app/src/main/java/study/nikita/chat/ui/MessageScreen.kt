@@ -3,6 +3,8 @@ package study.nikita.chat.ui
 import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,6 +67,14 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
     val incoming by messageListViewModel.incomingMsg.collectAsState()
     val messageField by messageListViewModel.messageInput.collectAsState()
     val isLoading by messageListViewModel.isLoading.collectAsState()
+    val selectedImageUri by messageListViewModel.selectedImage.collectAsState()
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            messageListViewModel.setImageUri(uri?:Uri.EMPTY)
+        }
+    )
 
     val enabled = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE && messages.isNotEmpty()
     BackHandler(enabled = enabled) {
@@ -108,6 +118,12 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
         }
     }
 
+    LaunchedEffect(selectedImageUri) {
+        if (selectedImageUri != Uri.EMPTY) {
+            messageListViewModel.uploadImage(context)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -146,6 +162,14 @@ fun MessageList(navController: NavController, messageListViewModel: MessageListV
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        Button(
+                            onClick = {
+                                imagePickerLauncher.launch("image/*")
+                            },
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            Text("img")
+                        }
                         TextField(
                             value = messageField,
                             onValueChange = { messageListViewModel.onTextChanged(it) },

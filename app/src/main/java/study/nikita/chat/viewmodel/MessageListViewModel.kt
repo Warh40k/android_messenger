@@ -1,6 +1,9 @@
 package study.nikita.chat.viewmodel
 
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -9,8 +12,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import study.nikita.chat.network.NetworkUtils
 import study.nikita.chat.network.rest.ApiService
+import study.nikita.chat.network.rest.Image
 import study.nikita.chat.network.websocket.ChatWebSocket
 import study.nikita.chat.network.rest.Message
 import study.nikita.chat.network.rest.MessageData
@@ -20,6 +28,8 @@ import study.nikita.chat.network.websocket.WebSocketEvent
 import study.nikita.chat.repository.AuthRepository
 import study.nikita.chat.repository.ChatRepository
 import study.nikita.chat.repository.MessageRepository
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -36,6 +46,10 @@ class MessageListViewModel @Inject constructor(
 
     private var _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
+
+    private var _selectedImage = MutableStateFlow<Uri>(Uri.EMPTY)
+    var selectedImage: StateFlow<Uri> get() = _selectedImage.asStateFlow()
+        set(value) { _selectedImage.value = value.value }
 
     val selected: StateFlow<String> get() = chatRepository.selectedChat
     val incomingMsg: StateFlow<List<Message>> get() = chatRepository.newMessages
@@ -64,6 +78,10 @@ class MessageListViewModel @Inject constructor(
 
     fun cleanSelected() {
         chatRepository.setSelectedChat("")
+    }
+
+    fun setImageUri(uri: Uri) {
+        _selectedImage.value = uri
     }
 
     fun cleanUserInput() {
@@ -127,6 +145,52 @@ class MessageListViewModel @Inject constructor(
 
         chatWebSocket.sendMessage(gson.toJson(messageText))
         _messages.value = listOf(message) + _messages.value
+    }
+
+    fun uploadImage(context: Context) {
+        val filePath = getRealPathFromUri(context, selectedImage.value)
+        val file = File(filePath)
+
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val message = Message(
+            id = 0,
+            from = authRepository.getUsername() ?: "",
+            to = selected.value,
+            data = MessageData(
+                text = null,
+                image = Image(link="${authRepository.getUsername()}/${file.name}")
+            ),
+            time = System.currentTimeMillis() / 1000L
+        )
+        val gson = Gson()
+        val strMsg = gson.toJson(message)
+        val image = MultipartBody.Part.createFormData("picture", file.name, requestFile)
+        val msg = MultipartBody.Part.createFormData("msg", strMsg)
+
+        viewModelScope.launch {
+            try {
+                apiService.uploadImage(authRepository.getAuthToken()?:"", image, msg)
+                _messages.value = listOf(message) + _messages.value
+            } catch (e : Exception) {
+                _error.value = "Ошибка при загрузке изображения: ${e.message}"
+                println(e.message)
+            }
+        }
+    }
+
+    fun getRealPathFromUri(context: Context, uri: Uri): String {
+        val cursor: Cursor? = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.moveToFirst()
+        val displayName: String = cursor?.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)) ?: ""
+        cursor?.close()
+
+        val file = File(context.cacheDir, displayName)
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        return file.path
     }
 }
 

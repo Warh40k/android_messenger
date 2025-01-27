@@ -1,5 +1,7 @@
 package study.nikita.chat.network.rest
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -34,4 +36,12 @@ interface ApiService {
         @Query("limit") limit : Int = 20,
         @Query("reverse") reverse : Boolean = false
     ): List<Message>
+
+    @Multipart
+    @POST("/messages")
+    suspend fun uploadImage(
+        @Header("X-Auth-Token") token: String,
+        @Part image: MultipartBody.Part,
+        @Part msg: MultipartBody.Part
+    )
 }
